@@ -30,9 +30,26 @@ class CustomSearchTest extends KernelTestCase
 
         foreach ($inputsAndExpectations as $input => $expect) {
             $index = $this->search->index($input);
-            foreach ($index as $i) {
-                $this->assertTrue(in_array($i, $expect));
+            foreach ($expect as $e) {
+                $this->assertTrue(in_array($e, $index));
             }
+        }
+    }
+
+    public function testReIndex()
+    {
+        $input = [
+            0 => ['406coupe'],
+            1 => ['nissan350']
+        ];
+        $expect = [
+            0 => [0 => '406', 1 => 'coupe'],
+            1 => [0 => 'nissan', 1 => '350']
+        ];
+
+        foreach ($input as $key => $index) {
+            $reIndex = $this->search->reIndex($index);
+            $this->assertTrue(count(array_diff($reIndex, $expect[$key])) == 0);
         }
     }
 }

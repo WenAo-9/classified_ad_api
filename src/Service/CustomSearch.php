@@ -97,6 +97,10 @@ class CustomSearch
         return $index;
     }
 
+    /**
+     * detect and isolate text merged to digit or digits merged to character
+     * then return @array of terms
+     */
     public function reIndex ($index)
     {
         $altIndex = $index;

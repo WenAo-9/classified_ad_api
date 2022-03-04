@@ -25,7 +25,7 @@ class CarControllerTest extends KernelTestCase
     public function testGetCars()
     {
         $response = $this->client->request(
-            'GET', 'http://localhost:80/car-models', [
+            'GET', 'http://localhost:80/car-models?page=1', [
                 'verify_peer' => false,
             ]
         );
