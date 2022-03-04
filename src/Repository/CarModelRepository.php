@@ -27,7 +27,6 @@ class CarModelRepository extends ServiceEntityRepository
     public function findValidCars($options)
     {
         return $this->getFilteredQuery($options)
-            ->setMaxResults(10)
             ->getQuery()
             ->getResult()
         ;
@@ -39,11 +38,12 @@ class CarModelRepository extends ServiceEntityRepository
         
         if (!is_null($options['page']) && is_numeric($options['page'])) {
             $qb->setFirstResult(($options['page'] - 1) * 10);
+            $qb->setMaxResults(10);
         }
 
         if (!is_null($options['isActive'])) {
-            $qb->andWhere('cm.authorized = :true')
-            ->setParameter('true', $options['isActive']);
+            $qb->andWhere('cm.authorized = :true');
+            $qb->setParameter('true', $options['isActive']);
         } else {
             $qb->andWhere('cm.authorized = true');
         }

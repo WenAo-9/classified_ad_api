@@ -19,20 +19,8 @@ class CustomSearch
             foreach ($labelIndex as $position => $label) {
                 $processedLabel = $this->processText($label);
                 $labelIndex[$position] = $processedLabel;
-                
-                if (in_array($processedLabel, $index)){
-                    $scores[$class->getId()] += 30;
-                    
-                    if (count($labelIndex) == 1) {
-                        $scores[$class->getId()] += 5; 
-                    } 
-                    if (!in_array($processedLabel, CarModel::$commonName)) { 
-                        $scores[$class->getId()] += 10; 
-                    } 
-                    if(count($index) > 1 && $position == 0) {
-                        $scores[$class->getId()] += 2.5;
-                    }
-                }
+
+                $scores[$class->getId()] += $this->scoreRelevance($position, count($labelIndex), $processedLabel, $index);
                 
                 if ($scores[$class->getId()] < 30) {
                     $altIndex = $index;
@@ -52,7 +40,6 @@ class CustomSearch
                             $lev = levenshtein($term, $processedLabel);
                             if ($lev <= 1) $scores[$class->getId()] += 6;
                         }
-                        
                     }
 
                     if (in_array($processedLabel, $altIndex)){
@@ -62,7 +49,7 @@ class CustomSearch
                 }
             }
         }
-        
+
         if (max($scores) > 24) {
             $response = array_keys($scores, max($scores));
         }
@@ -109,5 +96,24 @@ class CustomSearch
         }
 
         return $index;
+    }
+
+    public function scoreRelevance($position, $count, $processedLabel, $index)
+    {
+        if (in_array($processedLabel, $index)) {
+            $score = 30;
+            
+            if ($count == 1) {
+                $score += 5; 
+            }
+            if (!in_array($processedLabel, CarModel::$commonName)) { 
+                $score += 10; 
+            } 
+            if(count($index) > 1 && $position == 0) {
+                $score += 2.5;
+            }
+        }
+
+        return $score ?? 0;
     }
 }
