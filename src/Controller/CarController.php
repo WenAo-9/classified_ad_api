@@ -57,7 +57,12 @@ class CarController extends BaseController
             }
 
         } else {
-            $carModels = $this->entityManager->getRepository(CarModel::class)->findValidCars();
+            $options = [
+                'page'      => $request->query->get('page'),
+                'isActive'  => null,
+            ];
+    
+            $carModels = $this->entityManager->getRepository(CarModel::class)->findValidCars($options);
             $data = $serializer->serialize($carModels, 'json', ['groups' => 'car:show']);
             $response = $this->responseOk($data);
         }

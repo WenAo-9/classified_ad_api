@@ -27,7 +27,7 @@ class ClassifiedAdController extends BaseController
     {
         $options = [
             'discr'     => '',
-            'term'      => '',
+            'page'      => $request->query->get('page'),
             'isActive'  => null,
         ];
 

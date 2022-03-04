@@ -33,6 +33,10 @@ class ClassifiedAdRepository extends ServiceEntityRepository
             ;
         }
 
+        if (!is_null($options['page']) && is_numeric($options['page'])) {
+            $qb->setFirstResult(($options['page'] - 1) * 10);
+        }
+
         return $qb;
     }
 }
