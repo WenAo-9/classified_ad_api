@@ -13,6 +13,11 @@ class CustomSearch
         $index = $this->index($input);
 
         foreach($classes as $class) {
+
+            if (strcmp( $this->processText($class->getLabel()), $this->processText($input) ) == 0) {
+                return [$class->getId()];
+            }
+
             $scores[$class->getId()] = 1;
             $labelIndex = explode(' ', $class->getLabel());
             
@@ -23,33 +28,23 @@ class CustomSearch
                 $scores[$class->getId()] += $this->scoreRelevance($position, count($labelIndex), $processedLabel, $index);
                 
                 if ($scores[$class->getId()] < 30) {
-                    $altIndex = $index;
 
-                    foreach ($index as $key => $term) {
-                        
-                        if (preg_match('~(?<=\d)([a-z]+)~', $term, $numbers)) {
-                            array_push($altIndex, $numbers[0]);
-                            $altIndex[$key] = preg_replace('~(?<=\d)([a-z]+)~', '', $term);
-                        
-                        } elseif (preg_match('~(?<=[a-z])((\d+)[a-z]?)~', $term, $numbers)) {
-                            array_push($altIndex, $numbers[0]);
-                            $altIndex[$key] = preg_replace('~(?<=[a-z])((\d+)[a-z]?)~', '', $term);
-                        }
-                        
+                    foreach ($index as $term) {
                         if(count_chars($term) > 2 && count_chars($processedLabel) > 2) {
                             $lev = levenshtein($term, $processedLabel);
                             if ($lev <= 1) $scores[$class->getId()] += 6;
                         }
                     }
 
+                    $altIndex = $this->reIndex($index);
+
                     if (in_array($processedLabel, $altIndex)){
                         $scores[$class->getId()] += 17.5;
                     }
-                    
                 }
             }
         }
-
+        
         if (max($scores) > 24) {
             $response = array_keys($scores, max($scores));
         }
@@ -75,6 +70,10 @@ class CustomSearch
         return $text;
     }
 
+    /**
+     * detect isolated letter or number to merge
+     * then return @array of terms
+     */
     public function index($input)
     {
         preg_match('~([a-z]?[a-z]?)(\s+)(\d+)~', $input, $match);
@@ -96,6 +95,25 @@ class CustomSearch
         }
 
         return $index;
+    }
+
+    public function reIndex ($index)
+    {
+        $altIndex = $index;
+
+        foreach ($index as $key => $term) {
+            
+            if (preg_match('~(?<=\d)([a-z]+)~', $term, $numbers)) {
+                array_push($altIndex, $numbers[0]);
+                $altIndex[$key] = preg_replace('~(?<=\d)([a-z]+)~', '', $term);
+            
+            } elseif (preg_match('~(?<=[a-z])((\d+)[a-z]?)~', $term, $numbers)) {
+                array_push($altIndex, $numbers[0]);
+                $altIndex[$key] = preg_replace('~(?<=[a-z])((\d+)[a-z]?)~', '', $term);
+            }
+        }
+
+        return $altIndex;
     }
 
     public function scoreRelevance($position, $count, $processedLabel, $index)
