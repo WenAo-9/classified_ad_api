@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -40,9 +41,9 @@ class ClassifiedAdController extends BaseController
             ->findWithOptions($options)
         ;
 
-        $data = $serializer->serialize($classifiedAds, 'json', ['groups' => 'ad:list']);
+        $data = $serializer->normalize($classifiedAds, null, ['groups' => 'ad:list']);
 
-        $response = $this->responseOk($data);
+        $response = $this->createResponse(Response::HTTP_OK, 'ressources retrieved', $data);
 
         return $response;
     }
@@ -53,21 +54,21 @@ class ClassifiedAdController extends BaseController
         $rawData = $request->getContent();
         
         if (!$rawData || !json_decode($rawData)) {
-            $response = $this->responseBadRequest();
+            $response = $this->createResponse(Response::HTTP_BAD_REQUEST, 'invalid request');
             return $response;
         }
 
         $subclass = $this->cti->findSubclassByType(ClassifiedAd::class, $adtype);
 
         if (!$subclass) {
-            $response = $this->responseBadRequest('invalid ad type');
+            $response = $this->createResponse(Response::HTTP_BAD_REQUEST, 'invalid ad type');
             return $response;
         }
         
         $relatedObject = $this->cti->relatedObject($subclass[0], $rawData);
 
         if (is_null($relatedObject)) {
-            $response = $this->responseBadRequest('invalid car model');
+            $response = $this->createResponse(Response::HTTP_BAD_REQUEST, 'invalid car model');
             return $response;
         }
 
@@ -77,14 +78,14 @@ class ClassifiedAdController extends BaseController
         $violations = $validator->validate($classifiedAd);
 
         if (count($violations) > 0) {
-            $errors = $serializer->serialize($violations, 'json');
-            $response = $this->responseBadRequest($errors);
+            $errors = $serializer->normalize($violations, null);
+            $response = $this->createResponse(Response::HTTP_BAD_REQUEST, 'constraint violations',$errors);
         } else {
             $this->entityManager->persist($classifiedAd);
             $this->entityManager->flush();
 
-            $data = $serializer->serialize($classifiedAd, 'json', ['groups' => 'ad:show']);
-            $response = $this->responseCreated($data);
+            $data = $serializer->normalize($classifiedAd, null, ['groups' => 'ad:show']);
+            $response = $this->createResponse(Response::HTTP_CREATED, 'ressource created',$data);
         }
 
         return $response;
@@ -96,14 +97,14 @@ class ClassifiedAdController extends BaseController
         $rawData = $request->getContent();
 
         if (!json_decode($rawData)) {
-            $response = $this->responseBadRequest();
+            $response = $this->createResponse(Response::HTTP_BAD_REQUEST, 'invalid request');
             return $response;
         }
 
         $classifiedAd = $this->entityManager->getRepository(ClassifiedAd::class)->findOneById($id);
 
         if (!$classifiedAd) {
-            $response = $this->responseNotFound('invalid classified ad');
+            $response = $this->createResponse(Response::HTTP_NOT_FOUND, 'invalid classified ad');
             return $response;
         }
 
@@ -113,11 +114,11 @@ class ClassifiedAdController extends BaseController
             $this->entityManager->persist($classifiedAd);
             $this->entityManager->flush();
 
-            $data = $serializer->serialize($classifiedAd, 'json', ['groups' => 'ad:show']);
-            $response = $this->responseOk($data);
+            $data = $serializer->normalize($classifiedAd, null, ['groups' => 'ad:show']);
+            $response = $this->createResponse(Response::HTTP_OK, 'ressource updated',$data);
         } else {
-            $errors = $serializer->serialize($validator->validate($classifiedAd), 'json');
-            $response = $this->responseBadRequest($errors);
+            $errors = $serializer->normalize($validator->validate($classifiedAd), null);
+            $response = $this->createResponse(Response::HTTP_BAD_REQUEST, 'invalid data provided', $errors);
         }
 
         return $response;
@@ -129,12 +130,12 @@ class ClassifiedAdController extends BaseController
         $classifiedAd = $this->entityManager->getRepository(ClassifiedAd::class)->findOneById($id);
 
         if (!$classifiedAd) {
-            $response = $this->responseNotFound();
+            $response = $this->createResponse(Response::HTTP_NOT_FOUND, 'ressource not found');
         } else {
             $this->entityManager->remove($classifiedAd);
             $this->entityManager->flush();
 
-            $response = $this->responseNoContent();
+            $response = $this->createResponse(Response::HTTP_NO_CONTENT, 'ressource deleted');
         }
 
         return $response;
@@ -145,9 +146,9 @@ class ClassifiedAdController extends BaseController
     {
         $types = $this->cti->findSubclassTypes(ClassifiedAd::class);
 
-        $data = $serializer->serialize($types, 'json');
+        $data = $serializer->normalize($types, null);
 
-        $response = $this->responseOk($data);
+        $response = $this->createResponse(Response::HTTP_OK, 'ressource retrieved',$data);
 
         return $response;
     }

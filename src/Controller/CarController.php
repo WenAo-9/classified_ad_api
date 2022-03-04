@@ -38,13 +38,13 @@ class CarController extends BaseController
             $carModel = $this->entityManager->getRepository(CarModel::class)->findValidCarByLabel($term);
 
             if (null != $carModel) {
-                $data = $serializer->serialize($carModel, 'json', ['groups' => 'car:show']);
-                $response = $this->responseOk($data);
+                $data = $serializer->normalize($carModel, 'json', ['groups' => 'car:show']);
+                $response = $this->createResponse(Response::HTTP_OK, 'ressource retrieved', $data);
 
                 return $response;
                 
             } else {
-                $response = $this->responseForbidden('invalid car model');
+                $response = $this->createResponse(Response::HTTP_FORBIDDEN, 'invalid car model');
 
                 $carModel = [];
                 $carModels = $this->entityManager->getRepository(CarModel::class)->findValidCars($options);
@@ -57,15 +57,15 @@ class CarController extends BaseController
                         });
                     }
 
-                    $data = $serializer->serialize($carModel, 'json', ['groups' => 'car:show']);
-                    $response = $this->responseOk($data);
+                    $data = $serializer->normalize($carModel, 'json', ['groups' => 'car:show']);
+                    $response = $this->createResponse(Response::HTTP_OK, 'ressource retrieved',$data);
                 }
             }
 
         } else {
             $carModels = $this->entityManager->getRepository(CarModel::class)->findValidCars($options);
-            $data = $serializer->serialize($carModels, 'json', ['groups' => 'car:show']);
-            $response = $this->responseOk($data);
+            $data = $serializer->normalize($carModels, 'json', ['groups' => 'car:show']);
+            $response = $this->createResponse(Response::HTTP_OK, 'ressource retrieved', $data);
         }
 
         return $response;
