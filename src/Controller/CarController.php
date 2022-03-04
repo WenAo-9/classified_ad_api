@@ -27,7 +27,13 @@ class CarController extends BaseController
     #[Route('/car-models', methods:['GET'])]
     public function getItem(Request $request, SerializerInterface $serializer)
     {
-        if ($term = $request->query->get('term')) {
+        $options = [
+            'page'      => $request->query->get('page'),
+            'isActive'  => null,
+            'term'      => $request->query->get('term')
+        ];
+
+        if ($term = $options['term']) {
             $term = strtolower($term);
             $carModel = $this->entityManager->getRepository(CarModel::class)->findValidCarByLabel($term);
 
@@ -41,7 +47,7 @@ class CarController extends BaseController
                 $response = $this->responseForbidden('invalid car model');
 
                 $carModel = [];
-                $carModels = $this->entityManager->getRepository(CarModel::class)->findValidCars();
+                $carModels = $this->entityManager->getRepository(CarModel::class)->findValidCars($options);
                 $carIds = $this->search->searchClassByLabel($carModels, $term);
                 
                 if(null != $carIds) {
@@ -57,11 +63,6 @@ class CarController extends BaseController
             }
 
         } else {
-            $options = [
-                'page'      => $request->query->get('page'),
-                'isActive'  => null,
-            ];
-    
             $carModels = $this->entityManager->getRepository(CarModel::class)->findValidCars($options);
             $data = $serializer->serialize($carModels, 'json', ['groups' => 'car:show']);
             $response = $this->responseOk($data);
