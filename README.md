@@ -1,9 +1,9 @@
 # Test_API_and_phpSearchEngine
-#
+
 Disclaimer : Il s'agissait de mon premier environnement 'tout Docker', pour la configuration tout le mérite revient à K.Dunglas|'symfony-docker' :
 https://github.com/dunglas/symfony-docker
 
-Contexte : mini projet réalisé dans le cadre d'un test technique qui avait pour objectif de reproduire une API Rest (sans utiliser API platform) permettant d'effectuer les opérations classiques sur des annonces ayant chacune une catégorie : Auto (sujet du test), Immo ou emploi.
+Contexte : mini projet réalisé dans le cadre d'un test technique qui avait pour objectif de reproduire un service API (sans utiliser API platform) permettant d'effectuer les opérations classiques sur des annonces ayant chacune une catégorie : Auto (sujet du test), Immo ou emploi.
 Il fallait également que le testeur puisse effectuer une recherche par modèle de véhicule (uniquement), et retourner le modèle le plus pertinent via un algorithme de recherche maison à réaliser en php. 
 #
 
