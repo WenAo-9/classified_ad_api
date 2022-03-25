@@ -1,4 +1,4 @@
-# Test_Leboncoin_API
+# Test_API_and_phpSearchEngine
 #
 Disclaimer : Il s'agissait de mon premier environnement 'tout Docker', pour la configuration tout le mérite revient à K.Dunglas|'symfony-docker' :
 https://github.com/dunglas/symfony-docker
