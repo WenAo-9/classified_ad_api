@@ -5,9 +5,10 @@ https://github.com/dunglas/symfony-docker
 
 Contexte : mini projet réalisé dans le cadre d'un test technique qui avait pour objectif de reproduire un service API (sans utiliser API platform) permettant d'effectuer les opérations classiques sur des annonces ayant chacune une catégorie : Auto (sujet du test), Immo ou emploi.
 Il fallait également que le testeur puisse effectuer une recherche par modèle de véhicule (uniquement), et retourner le modèle le plus pertinent via un algorithme de recherche maison à réaliser en php. 
-#
 
 Les routes disponibles sont les suivantes : 
+#
+
 # endpoints de la ressource petite Annonce
   - GET         /classified-ads?adtype={type}
   - POST        /classified-ads/{type}    le paramètre type est récupéré depuis la route /classified-ad-types
