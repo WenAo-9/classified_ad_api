@@ -2,17 +2,10 @@
 #
 Disclaimer : Il s'agissait de mon premier environnement 'tout Docker', pour la configuration tout le mérite revient à K.Dunglas|'symfony-docker' :
 https://github.com/dunglas/symfony-docker
+
+Contexte : mini projet réalisé dans le cadre d'un test technique qui avait pour objectif de reproduire une API Rest (sans utiliser API platform) permettant d'effectuer les opérations classiques sur des annonces ayant chacune une catégorie : Auto (sujet du test), Immo ou emploi.
+Il fallait également que le testeur puisse effectuer une recherche par modèle de véhicule (uniquement), et retourner le modèle le plus pertinent via un algorithme de recherche maison à réaliser en php. 
 #
-
-Pour lancer l'application il suffira de monter les images docker :
-  - docker-compose build --no-cache --pull
-  - docker-compose up -d
-
-mettre à jour la base de données, puis charger les fixtures :
-  - doctrine:schema:update --force
-  - doctrine:fixtures:load
-
-Si tout s'est bien déroulé, l'API est en place et prête à être appelée.
 
 Les routes disponibles sont les suivantes : 
 # endpoints de la ressource petite Annonce
@@ -35,4 +28,4 @@ Les routes disponibles sont les suivantes :
   - GET    http://localhost:80/classified-ad-types                 retourne les types d'annonce existants
 
 # notes
-  Parmi les options possibles pour implémenter les types de petite annonce, j'ai longtemps hésité entre une classe abstraite/interface à implémenter sur des classes distinctes     et le CTI mappping doctrine. Le choix s'est finalement porté vers ce dernier, bien que cela implique une jointure supplémentaire, sémantiquement et fonctionnellement il         s'agit véritablement de petites annonces pouvant être traitées et considérées de la même manière indistinctement du type. Le CTI me paraissait plus proche de la réalité         "métier".
+  Parmi les options possibles pour implémenter les types de petite annonce, j'ai longtemps hésité entre une classe abstraite/interface à implémenter sur des classes distinctes et le CTI mappping doctrine. Le choix s'est finalement porté vers ce dernier, bien que cela implique une jointure supplémentaire, sémantiquement et fonctionnellement il s'agit véritablement de petites annonces pouvant être traitées et considérées de la même manière indistinctement du type. Le CTI me paraissait plus proche de la réalité "métier".
